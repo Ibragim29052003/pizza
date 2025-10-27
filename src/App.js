@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./copmonents/Header";
 import Categories from "./copmonents/Categories";
 import Sort from "./copmonents/Sort";
 import PizzaBlock from "./copmonents/PizzaBlock";
-import pizzas from "./assets/pizzas.json";
+// import pizzas from "./assets/pizzas.json";
 
 import "./scss/app.scss";
 
 function App() {
+  // https://68ff26cce02b16d1753ca841.mockapi.io/items
+
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetch("https://68ff26cce02b16d1753ca841.mockapi.io/items")
+      .then((res) => res.json())
+      .then((arr) => {
+        setItems(arr);
+      });
+  }, []);
+
   return (
     <div className="wrapper">
       <Header />
@@ -23,14 +35,14 @@ function App() {
             <PizzaBlock title="Сырная" price={450} />
             <PizzaBlock title="Креветки по-азиатски" price={290} />
             <PizzaBlock title="Сырный цыпленок" price={385} /> */}
-            {pizzas.map((obj) => (
+            {items.map((obj) => (
               <PizzaBlock {...obj} key={obj.id}></PizzaBlock>
             ))}
           </div>
         </div>
       </div>
     </div>
-  );     
+  );
 }
 
 export default App;
