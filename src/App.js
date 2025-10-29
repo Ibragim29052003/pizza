@@ -1,44 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import Header from "./copmonents/Header";
-import Categories from "./copmonents/Categories";
-import Sort from "./copmonents/Sort";
-import PizzaBlock from "./copmonents/PizzaBlock";
-// import pizzas from "./assets/pizzas.json";
-
+import { Home } from "./pages/Home";
+import { Cart } from "./pages/Cart";
+import { NotFound } from "./pages/NotFound";
 import "./scss/app.scss";
 
 function App() {
-  // https://68ff26cce02b16d1753ca841.mockapi.io/items
-
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    fetch("https://68ff26cce02b16d1753ca841.mockapi.io/items")
-      .then((res) => res.json())
-      .then((arr) => {
-        setItems(arr);
-      });
-  }, []);
-
   return (
     <div className="wrapper">
       <Header />
       <div className="content">
         <div className="container">
-          <div className="content__top">
-            <Categories />
-            <Sort />
-          </div>
-          <h2 className="content__title">Все пиццы</h2>
-          <div className="content__items">
-            {/* <PizzaBlock title="Чизбургер-пицца" price={395} />
-            <PizzaBlock title="Сырная" price={450} />
-            <PizzaBlock title="Креветки по-азиатски" price={290} />
-            <PizzaBlock title="Сырный цыпленок" price={385} /> */}
-            {items.map((obj) => (
-              <PizzaBlock {...obj} key={obj.id}></PizzaBlock>
-            ))}
-          </div>
+          {/* тут будет динамический контент */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<Cart />} />
+
+            {/* если ни один из роутов выше не подошел, то возвращаем NotFound */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </div>
       </div>
     </div>
