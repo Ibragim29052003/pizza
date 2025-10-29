@@ -1,8 +1,10 @@
-@import '../variables';
+@import "../variables";
 
 .categories {
   ul {
     display: flex;
+    flex-wrap: wrap;
+    row-gap: 20px;
 
     li {
       background-color: #f9f9f9;
@@ -25,6 +27,10 @@
       &.active {
         background-color: #282828;
         color: #fff;
+      }
+
+      @media (max-width: 760px) {
+        padding: 8px 20px;
       }
     }
   }
