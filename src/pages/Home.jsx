@@ -5,7 +5,8 @@ import Sort from "../copmonents/Sort";
 import PizzaBlock from "../copmonents/PizzaBlock";
 // import pizzas from "../assets/pizzas.json";
 import { Skeleton } from "../copmonents/PizzaBlock/Skeleton";
-export const Home = () => {
+import Pagination from "../copmonents/Pagination";
+export const Home = ({ searchValue }) => {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -14,6 +15,7 @@ export const Home = () => {
   // так родитель может передавать текущие значения и функции обновления дочерним компонентам (Categories, Sort).
   // это удобнее, чем хранить useState внутри них, ведь данные нужны именно здесь — для формирования запроса.
   const [categoryId, setCategoryId] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1)
   const [sortType, setSortType] = useState({
     name: "популярности",
     sortProperty: "rating",
@@ -24,9 +26,10 @@ export const Home = () => {
     const order = sortType.sortProperty.includes("-") ? "asc" : "desc";
     const sortBy = sortType.sortProperty.replace("-", "");
     const category = categoryId > 0 ? `category=${categoryId}` : "";
+    const search = searchValue ? `search=${searchValue}` : "";
 
     fetch(
-      `https://68ff26cce02b16d1753ca841.mockapi.io/items?${category}&sortBy=${sortBy}&order=${order}`
+      `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
     )
       .then((res) => res.json())
       .then((arr) => {
@@ -37,7 +40,22 @@ export const Home = () => {
     // чтобы не было ситуации, когда мы к примеру на странице корзины проскролили вниз
     // и при переходе на главную страницу скролл оставался так же снизу
     window.scrollTo(0, 0);
-  }, [categoryId, sortType]);
+  }, [categoryId, sortType, searchValue, currentPage]);
+
+  const pizzas = items.map((obj) => <PizzaBlock {...obj} key={obj.id} />);
+
+  const skeletons = [...new Array(6)].map((_, index) => (
+    <Skeleton key={index} />
+  ));
+  // такой вариант подходит если у меня статичный массив и тогда можно не обращаться на бэк
+  // const pizzas = items
+  //   .filter(({ title }) => {
+  //     if (title.toLowerCase().includes(searchValue.toLowerCase())) {
+  //       return true;
+  //     }
+  //     return false;
+  //   })
+  //   .map((obj) => <PizzaBlock {...obj} key={obj.id}></PizzaBlock>);
 
   return (
     <div className="container">
@@ -66,10 +84,9 @@ export const Home = () => {
                 <PizzaBlock title="Сырный цыпленок" price={385} /> */}
 
         {/* изначально создаем массив на 6 элементов (undefined) и меняем все на скелетон, чтобы при первом рендере сразу показывались скелетоны  */}
-        {isLoading
-          ? [...new Array(6)].map((_, index) => <Skeleton key={index} />)
-          : items.map((obj) => <PizzaBlock {...obj} key={obj.id}></PizzaBlock>)}
+        {isLoading ? skeletons : pizzas}
       </div>
+      <Pagination onChangePage={(number) => setCurrentPage(number)}/>
     </div>
   );
 };
