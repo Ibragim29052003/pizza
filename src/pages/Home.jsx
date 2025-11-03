@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import Categories from "../copmonents/Categories";
 import Sort from "../copmonents/Sort";
@@ -6,7 +6,18 @@ import PizzaBlock from "../copmonents/PizzaBlock";
 // import pizzas from "../assets/pizzas.json";
 import { Skeleton } from "../copmonents/PizzaBlock/Skeleton";
 import Pagination from "../copmonents/Pagination";
-export const Home = ({ searchValue }) => {
+import { SearchContext } from "../App";
+export const Home = () => {
+
+// подписываемся на контекст SearchContext
+// когда значение в провайдере SearchContext изменится (value),
+// компонент Home и все его потомки, использующие useContext(SearchContext),
+// будут автоматически перерисованы с новыми данными (например, новым searchValue)
+
+// то есть все компоненты, находящиеся внутри <SearchContext.Provider>,
+// и использующие этот контекст, обновятся при изменении value.
+
+  const {searchValue} = useContext(SearchContext) 
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +26,7 @@ export const Home = ({ searchValue }) => {
   // так родитель может передавать текущие значения и функции обновления дочерним компонентам (Categories, Sort).
   // это удобнее, чем хранить useState внутри них, ведь данные нужны именно здесь — для формирования запроса.
   const [categoryId, setCategoryId] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1);
   const [sortType, setSortType] = useState({
     name: "популярности",
     sortProperty: "rating",
@@ -31,9 +42,24 @@ export const Home = ({ searchValue }) => {
     fetch(
       `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          return []; // если 404 или другая ошибка — возвращаем пустой массив
+        }
+        return res.json();
+      })
       .then((arr) => {
-        setItems(arr);
+        // проверка на то, что это действительно массив
+        if (Array.isArray(arr)) {
+          setItems(arr);
+        } else {
+          setItems([]); // безопасно
+        }
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Ошибка при получении данных:", err);
+        setItems([]); // чтобы не падало
         setIsLoading(false);
       });
     // при первом рендере главной странице нужно, чтобы мы сразу были в самом верху
@@ -86,7 +112,7 @@ export const Home = ({ searchValue }) => {
         {/* изначально создаем массив на 6 элементов (undefined) и меняем все на скелетон, чтобы при первом рендере сразу показывались скелетоны  */}
         {isLoading ? skeletons : pizzas}
       </div>
-      <Pagination onChangePage={(number) => setCurrentPage(number)}/>
+      <Pagination onChangePage={(number) => setCurrentPage(number)} />
     </div>
   );
 };

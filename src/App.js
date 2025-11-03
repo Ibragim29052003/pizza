@@ -4,25 +4,28 @@ import { Home } from "./pages/Home";
 import { Cart } from "./pages/Cart";
 import { NotFound } from "./pages/NotFound";
 import "./scss/app.scss";
-import { useState } from "react";
+import { createContext, useState } from "react";
 
+export const SearchContext = createContext();
 
 function App() {
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState("");
 
   return (
     <div className="wrapper">
-      <Header searchValue={searchValue} setSearchValue={setSearchValue}/>
-      <div className="content">
-        {/* тут будет динамический контент */}
-        <Routes>
-          <Route path="/" element={<Home searchValue={searchValue}/>} />
-          <Route path="/cart" element={<Cart />} />
+      <SearchContext.Provider value={{searchValue, setSearchValue}}>
+        <Header />
+        <div className="content">
+          {/* тут будет динамический контент */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<Cart />} />
 
-          {/* если ни один из роутов выше не подошел, то возвращаем NotFound */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
+            {/* если ни один из роутов выше не подошел, то возвращаем NotFound */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </SearchContext.Provider>
     </div>
   );
 }
