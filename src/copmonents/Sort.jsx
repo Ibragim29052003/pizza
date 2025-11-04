@@ -1,21 +1,32 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setSortType } from "../redux/slices/filterSlice";
 
-export default function Sort({ activeSelectIndex, onClickSelectItem }) {
+const selects = [
+  { name: "популярности (DESC)", sortProperty: "rating" },
+  { name: "популярности (ASC)", sortProperty: "-rating" },
+  { name: "цене (DESC)", sortProperty: "price" },
+  { name: "цене (ASC)", sortProperty: "-price" },
+  { name: "алфавиту (DESC)", sortProperty: "title" },
+  { name: "алфавиту (ASC)", sortProperty: "-title" },
+];
+
+export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
+  const dispatch = useDispatch();
+
+  // вытаскиваем информацию о сортировке из редакса
+  // обработчик события на изменение редакса (типо слушатель)
+  const sort = useSelector((state) => state.filter.sort);
+
   const [open, setOpen] = useState(false);
   // const [activeSelectIndex, setActiveSelectIndex] = useState(0);
   // const selects = ["популярности", "цене", "алфавиту"];
-  const selects = [
-    { name: "популярности (DESC)", sortProperty: "rating" },
-    { name: "популярности (ASC)", sortProperty: "-rating" },
-    { name: "цене (DESC)", sortProperty: "price" },
-    { name: "цене (ASC)", sortProperty: "-price" },
-    { name: "алфавиту (DESC)", sortProperty: "title" },
-    { name: "алфавиту (ASC)", sortProperty: "-title" },
-  ];
+
   // const sortName = selects[activeSelectIndex].name;
 
   function onClickListItem(obj) {
-    onClickSelectItem(obj);
+    // onClickSelectItem(obj);
+    dispatch(setSortType(obj));
     setOpen(false);
   }
   return (
@@ -34,7 +45,7 @@ export default function Sort({ activeSelectIndex, onClickSelectItem }) {
           />
         </svg>
         <b>По:</b>
-        <span onClick={() => setOpen(!open)}>{activeSelectIndex.name}</span>
+        <span onClick={() => setOpen(!open)}>{sort.name}</span>
       </div>
       {open && (
         <div className="sort__popup">
@@ -42,7 +53,9 @@ export default function Sort({ activeSelectIndex, onClickSelectItem }) {
             {selects.map((obj, index) => (
               <li
                 key={index}
-                className={activeSelectIndex.sortProperty === obj.sortProperty ? "active" : ""}
+                className={
+                  sort.sortProperty === obj.sortProperty ? "active" : ""
+                }
                 onClick={() => onClickListItem(obj)}
               >
                 {obj.name}

@@ -7,17 +7,26 @@ import PizzaBlock from "../copmonents/PizzaBlock";
 import { Skeleton } from "../copmonents/PizzaBlock/Skeleton";
 import Pagination from "../copmonents/Pagination";
 import { SearchContext } from "../App";
+import { useDispatch, useSelector } from "react-redux";
+import { setCategoryId } from "../redux/slices/filterSlice";
+
 export const Home = () => {
+  // возвращает функцию, с помощью которой можно отправлять действия (actions) в Redux для изменения state
+  const dispatch = useDispatch();
 
-// подписываемся на контекст SearchContext
-// когда значение в провайдере SearchContext изменится (value),
-// компонент Home и все его потомки, использующие useContext(SearchContext),
-// будут автоматически перерисованы с новыми данными (например, новым searchValue)
+  // у useSelector внутри есть и свой провайдер и свой контекст
+  const { categoryId, sort } = useSelector((state) => state.filter);
+  const sortType = sort.sortProperty;
 
-// то есть все компоненты, находящиеся внутри <SearchContext.Provider>,
-// и использующие этот контекст, обновятся при изменении value.
+  // подписываемся на контекст SearchContext
+  // когда значение в провайдере SearchContext изменится (value),
+  // компонент Home и все его потомки, использующие useContext(SearchContext),
+  // будут автоматически перерисованы с новыми данными (например, новым searchValue)
 
-  const {searchValue} = useContext(SearchContext) 
+  // то есть все компоненты, находящиеся внутри <SearchContext.Provider>,
+  // и использующие этот контекст, обновятся при изменении value.
+
+  const { searchValue } = useContext(SearchContext);
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,17 +34,22 @@ export const Home = () => {
   // состояния (categoryId, sortType) хранятся в родительском компоненте (Home).
   // так родитель может передавать текущие значения и функции обновления дочерним компонентам (Categories, Sort).
   // это удобнее, чем хранить useState внутри них, ведь данные нужны именно здесь — для формирования запроса.
-  const [categoryId, setCategoryId] = useState(0);
+  // const [categoryId, setCategoryId] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortType, setSortType] = useState({
-    name: "популярности",
-    sortProperty: "rating",
-  });
+  // const [sortType, setSortType] = useState({
+  //   name: "популярности",
+  //   sortProperty: "rating",
+  // });
+
+  const onClickCategory = (id) => {
+    dispatch(setCategoryId(id)); // аналогия с мегафоном (мы кричим, что хотим изменить категорию)
+  };
+
   useEffect(() => {
     setIsLoading(true); // чтобы начиналась загрузка (показывался скелетон)
 
-    const order = sortType.sortProperty.includes("-") ? "asc" : "desc";
-    const sortBy = sortType.sortProperty.replace("-", "");
+    const order = sortType.includes("-") ? "asc" : "desc";
+    const sortBy = sortType.replace("-", "");
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const search = searchValue ? `search=${searchValue}` : "";
 
@@ -92,14 +106,14 @@ export const Home = () => {
         */}
         <Categories
           value={categoryId}
-          onClickCategory={(i) => setCategoryId(i)} // функция, которую я передаю дочернему компоненту.
+          onClickCategory={onClickCategory} // функция, которую я передаю дочернему компоненту.
           // её задача: когда ребёнок «сообщит» о клике, обновить состояние родителя.
         />
         <Sort
-          // родитель говорит ребёнку:
-          // “вот тебе текущее значение sortType и вот функция, чтобы обновить его.”
-          activeSelectIndex={sortType}
-          onClickSelectItem={(obj) => setSortType(obj)}
+        // // родитель говорит ребёнку:
+        // // “вот тебе текущее значение sortType и вот функция, чтобы обновить его.”
+        // activeSelectIndex={sortType}
+        // onClickSelectItem={(obj) => setSortType(obj)}
         />
       </div>
       <h2 className="content__title">Все пиццы</h2>
