@@ -8,14 +8,15 @@ import { Skeleton } from "../copmonents/PizzaBlock/Skeleton";
 import Pagination from "../copmonents/Pagination";
 import { SearchContext } from "../App";
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryId } from "../redux/slices/filterSlice";
+import { setCategoryId, setPageCount } from "../redux/slices/filterSlice";
+import axios from "axios";
 
 export const Home = () => {
   // возвращает функцию, с помощью которой можно отправлять действия (actions) в Redux для изменения state
   const dispatch = useDispatch();
 
   // у useSelector внутри есть и свой провайдер и свой контекст
-  const { categoryId, sort } = useSelector((state) => state.filter);
+  const { categoryId, sort, pageCount } = useSelector((state) => state.filter);
   const sortType = sort.sortProperty;
 
   // подписываемся на контекст SearchContext
@@ -35,7 +36,7 @@ export const Home = () => {
   // так родитель может передавать текущие значения и функции обновления дочерним компонентам (Categories, Sort).
   // это удобнее, чем хранить useState внутри них, ведь данные нужны именно здесь — для формирования запроса.
   // const [categoryId, setCategoryId] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   // const [sortType, setSortType] = useState({
   //   name: "популярности",
   //   sortProperty: "rating",
@@ -45,6 +46,10 @@ export const Home = () => {
     dispatch(setCategoryId(id)); // аналогия с мегафоном (мы кричим, что хотим изменить категорию)
   };
 
+  const onChangePageNumber = (number) => {
+    dispatch(setPageCount(number))
+  }
+
   useEffect(() => {
     setIsLoading(true); // чтобы начиналась загрузка (показывался скелетон)
 
@@ -53,34 +58,57 @@ export const Home = () => {
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const search = searchValue ? `search=${searchValue}` : "";
 
-    fetch(
-      `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
-    )
-      .then((res) => {
-        if (!res.ok) {
-          return []; // если 404 или другая ошибка — возвращаем пустой массив
-        }
-        return res.json();
-      })
-      .then((arr) => {
-        // проверка на то, что это действительно массив
-        if (Array.isArray(arr)) {
-          setItems(arr);
+    // fetch(
+    //   `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
+    // )
+    //   .then((res) => {
+    //     if (!res.ok) {
+    //       return []; // если 404 или другая ошибка — возвращаем пустой массив
+    //     }
+    //     return res.json();
+    //   })
+    //   .then((arr) => {
+    //     // проверка на то, что это действительно массив
+    //     if (Array.isArray(arr)) {
+    //       setItems(arr);
+    //     } else {
+    //       setItems([]); // безопасно
+    //     }
+    //     setIsLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     console.error("Ошибка при получении данных:", err);
+    //     setItems([]); // чтобы не падало
+    //     setIsLoading(false);
+    //   });
+
+    // ДЕЛАЕМ axios вместо fetch
+    axios
+      .get(
+        `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${pageCount}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
+      )
+      .then((response) => {
+        const data = response.data;
+
+        // проверяем, что пришел массив (на случай если сервер вернет ошибку или объект)
+        if (Array.isArray(data)) {
+          setItems(response.data);
         } else {
-          setItems([]); // безопасно
+          setItems([]);
         }
         setIsLoading(false);
       })
-      .catch((err) => {
-        console.error("Ошибка при получении данных:", err);
-        setItems([]); // чтобы не падало
+      .catch((error) => {
+        console.log(error)
+        setItems([]); // сбрасываем, чтобы не падало при отрисовке
         setIsLoading(false);
       });
+
     // при первом рендере главной странице нужно, чтобы мы сразу были в самом верху
     // чтобы не было ситуации, когда мы к примеру на странице корзины проскролили вниз
     // и при переходе на главную страницу скролл оставался так же снизу
     window.scrollTo(0, 0);
-  }, [categoryId, sortType, searchValue, currentPage]);
+  }, [categoryId, sortType, searchValue, pageCount]);
 
   const pizzas = items.map((obj) => <PizzaBlock {...obj} key={obj.id} />);
 
@@ -126,7 +154,7 @@ export const Home = () => {
         {/* изначально создаем массив на 6 элементов (undefined) и меняем все на скелетон, чтобы при первом рендере сразу показывались скелетоны  */}
         {isLoading ? skeletons : pizzas}
       </div>
-      <Pagination onChangePage={(number) => setCurrentPage(number)} />
+      <Pagination pageCount={pageCount} onChangePage={onChangePageNumber} />
     </div>
   );
 };

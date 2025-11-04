@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   categoryId: 0,
+  pageCount: 1,
   sort: {
     name: "популярности",
     sortProperty: "rating",
@@ -12,6 +13,7 @@ const filterSlice = createSlice({
   name: "filters",
   initialState,
   reducers: {
+    // предыдущее состояние и наш action из компонента (action это то что прокричал dispatch)
     setCategoryId(state, action) {
       state.categoryId = action.payload;
     },
@@ -19,9 +21,12 @@ const filterSlice = createSlice({
       // меняем sort на то, что прийдет в Sort.jsx а именно в dispatch(setSortType(obj))
       state.sort = action.payload;
     },
+    setPageCount(state, action) {
+      state.pageCount = action.payload;
+    },
   },
 });
 
-export const { setCategoryId, setSortType } = filterSlice.actions;
+export const { setCategoryId, setSortType, setPageCount } = filterSlice.actions;
 
 export default filterSlice.reducer;
