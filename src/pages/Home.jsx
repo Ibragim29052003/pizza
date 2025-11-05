@@ -1,20 +1,27 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import qs from "qs";
+import {
+  Categories,
+  Sort,
+  PizzaBlock,
+  Skeleton,
+  Pagination,
+} from "../copmonents";
 
-import Categories from "../copmonents/Categories";
-import Sort from "../copmonents/Sort";
-import PizzaBlock from "../copmonents/PizzaBlock";
-// import pizzas from "../assets/pizzas.json";
-import { Skeleton } from "../copmonents/PizzaBlock/Skeleton";
-import Pagination from "../copmonents/Pagination";
 import { SearchContext } from "../App";
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryId, setPageCount } from "../redux/slices/filterSlice";
+import { setCategoryId, setPageCount, setFilters } from "../redux/slice";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { selects } from "../copmonents/Sort";
 
 export const Home = () => {
+  const navigate = useNavigate();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
+
   // возвращает функцию, с помощью которой можно отправлять действия (actions) в Redux для изменения state
   const dispatch = useDispatch();
-
   // у useSelector внутри есть и свой провайдер и свой контекст
   const { categoryId, sort, pageCount } = useSelector((state) => state.filter);
   const sortType = sort.sortProperty;
@@ -47,10 +54,10 @@ export const Home = () => {
   };
 
   const onChangePageNumber = (number) => {
-    dispatch(setPageCount(number))
-  }
+    dispatch(setPageCount(number));
+  };
 
-  useEffect(() => {
+  const fetchPizzas = () => {
     setIsLoading(true); // чтобы начиналась загрузка (показывался скелетон)
 
     const order = sortType.includes("-") ? "asc" : "desc";
@@ -99,31 +106,64 @@ export const Home = () => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         setItems([]); // сбрасываем, чтобы не падало при отрисовке
         setIsLoading(false);
       });
+  };
 
+  useEffect(() => {
+    // 1. Если в URL есть параметры — применяем их и не делаем запрос сразу
+    if (window.location.search) {
+      // substring(1) - удаляем первый символ (то есть удаляем знак ?)
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sort = selects.find(
+        (obj) => obj.sortProperty === params.sortProperty
+      );
+
+      dispatch(
+        setFilters({
+          ...params,
+          sort,
+        })
+      );
+      isSearch.current = true; // отмечаем, что уже восстанавливаем состояние
+    }
+  }, [dispatch]);
+
+  // 2. Когда фильтры изменились — если не восстановление из URL, тогда делаем запрос
+  useEffect(() => {
     // при первом рендере главной странице нужно, чтобы мы сразу были в самом верху
     // чтобы не было ситуации, когда мы к примеру на странице корзины проскролили вниз
     // и при переходе на главную страницу скролл оставался так же снизу
     window.scrollTo(0, 0);
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+
+    isSearch.current = false;
   }, [categoryId, sortType, searchValue, pageCount]);
+
+  // 3. Только после первого рендера — формируем URL
+  useEffect(() => {
+    if (isMounted.current) {
+      // параметры которые прийдут, превращаем в одну целую строку
+      const queryString = qs.stringify({
+        sortProperty: sortType,
+        categoryId,
+        pageCount,
+      });
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sortType, pageCount]);
 
   const pizzas = items.map((obj) => <PizzaBlock {...obj} key={obj.id} />);
 
   const skeletons = [...new Array(6)].map((_, index) => (
     <Skeleton key={index} />
   ));
-  // такой вариант подходит если у меня статичный массив и тогда можно не обращаться на бэк
-  // const pizzas = items
-  //   .filter(({ title }) => {
-  //     if (title.toLowerCase().includes(searchValue.toLowerCase())) {
-  //       return true;
-  //     }
-  //     return false;
-  //   })
-  //   .map((obj) => <PizzaBlock {...obj} key={obj.id}></PizzaBlock>);
 
   return (
     <div className="container">

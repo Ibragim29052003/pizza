@@ -16,4 +16,5 @@ const Pagination = ({ pageCount, onChangePage}) => {
   );
 };
 
-export default Pagination;
+
+export default Pagination
