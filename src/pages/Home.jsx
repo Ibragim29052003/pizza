@@ -11,9 +11,9 @@ import {
 import { SearchContext } from "../App";
 import { useDispatch, useSelector } from "react-redux";
 import { setCategoryId, setPageCount, setFilters } from "../redux/slice";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { selects } from "../copmonents/Sort";
+import { fetchPizzas } from "../redux/pizzaSlice";
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -22,6 +22,8 @@ export const Home = () => {
 
   // возвращает функцию, с помощью которой можно отправлять действия (actions) в Redux для изменения state
   const dispatch = useDispatch();
+
+  const { items, status } = useSelector((state) => state.pizza); // достаем из редакса
   // у useSelector внутри есть и свой провайдер и свой контекст
   const { categoryId, sort, pageCount } = useSelector((state) => state.filter);
   const sortType = sort.sortProperty;
@@ -35,8 +37,6 @@ export const Home = () => {
   // и использующие этот контекст, обновятся при изменении value.
 
   const { searchValue } = useContext(SearchContext);
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   // чтобы при запросе на бэк учитывать выбранную категорию и сортировку,
   // состояния (categoryId, sortType) хранятся в родительском компоненте (Home).
@@ -57,59 +57,30 @@ export const Home = () => {
     dispatch(setPageCount(number));
   };
 
-  const fetchPizzas = () => {
-    setIsLoading(true); // чтобы начиналась загрузка (показывался скелетон)
+  const getPizzas = async () => {
+    // setIsLoading(true); // чтобы начиналась загрузка (показывался скелетон)
 
     const order = sortType.includes("-") ? "asc" : "desc";
     const sortBy = sortType.replace("-", "");
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const search = searchValue ? `search=${searchValue}` : "";
 
-    // fetch(
-    //   `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
-    // )
-    //   .then((res) => {
-    //     if (!res.ok) {
-    //       return []; // если 404 или другая ошибка — возвращаем пустой массив
-    //     }
-    //     return res.json();
-    //   })
-    //   .then((arr) => {
-    //     // проверка на то, что это действительно массив
-    //     if (Array.isArray(arr)) {
-    //       setItems(arr);
-    //     } else {
-    //       setItems([]); // безопасно
-    //     }
-    //     setIsLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     console.error("Ошибка при получении данных:", err);
-    //     setItems([]); // чтобы не падало
-    //     setIsLoading(false);
-    //   });
-
-    // ДЕЛАЕМ axios вместо fetch
-    axios
-      .get(
-        `https://68ff26cce02b16d1753ca841.mockapi.io/items?page=${pageCount}&limit=4&${category}&sortBy=${sortBy}&order=${order}&${search}`
-      )
-      .then((response) => {
-        const data = response.data;
-
-        // проверяем, что пришел массив (на случай если сервер вернет ошибку или объект)
-        if (Array.isArray(data)) {
-          setItems(response.data);
-        } else {
-          setItems([]);
-        }
-        setIsLoading(false);
+    // try {
+    dispatch(
+      fetchPizzas({
+        order,
+        sortBy,
+        category,
+        search,
+        pageCount,
       })
-      .catch((error) => {
-        console.log(error);
-        setItems([]); // сбрасываем, чтобы не падало при отрисовке
-        setIsLoading(false);
-      });
+    );
+    // }
+    // catch (error) {
+    //   console.log(error);
+    //   dispatch(fetchPizzas([])); // сбрасываем, чтобы не падало при отрисовке
+    // } finally {
+    // }
   };
 
   useEffect(() => {
@@ -139,7 +110,7 @@ export const Home = () => {
     // и при переходе на главную страницу скролл оставался так же снизу
     window.scrollTo(0, 0);
     if (!isSearch.current) {
-      fetchPizzas();
+      getPizzas();
     }
 
     isSearch.current = false;
@@ -185,15 +156,17 @@ export const Home = () => {
         />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">
-        {/* <PizzaBlock title="Чизбургер-пицца" price={395} />
-                <PizzaBlock title="Сырная" price={450} />
-                <PizzaBlock title="Креветки по-азиатски" price={290} />
-                <PizzaBlock title="Сырный цыпленок" price={385} /> */}
-
-        {/* изначально создаем массив на 6 элементов (undefined) и меняем все на скелетон, чтобы при первом рендере сразу показывались скелетоны  */}
-        {isLoading ? skeletons : pizzas}
-      </div>
+      {/* изначально создаем массив на 6 элементов (undefined) и меняем все на скелетон, чтобы при первом рендере сразу показывались скелетоны */}
+      {status === "error" ? (
+        <div className="content__error-info">
+          <h2>Произошла ошибка 👀</h2>
+          <p>Не удалось получить пиццы 🍕😭</p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === "loading" ? skeletons : pizzas}
+        </div>
+      )}
       <Pagination pageCount={pageCount} onChangePage={onChangePageNumber} />
     </div>
   );
