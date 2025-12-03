@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import qs from "qs";
 import {
   Categories,
@@ -8,10 +8,14 @@ import {
   Pagination,
 } from "../copmonents";
 
-import { SearchContext } from "../App";
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryId, setPageCount, setFilters, selectFilter } from "../redux/slice";
-import { useNavigate } from "react-router-dom";
+import {
+  setCategoryId,
+  setPageCount,
+  setFilters,
+  selectFilter,
+} from "../redux/slice";
+import { Link, useNavigate } from "react-router-dom";
 import { selects } from "../copmonents/Sort";
 import { fetchPizzas, selectPizzaData } from "../redux/pizzaSlice";
 
@@ -25,7 +29,8 @@ export const Home = () => {
 
   const { items, status } = useSelector(selectPizzaData); // достаем из редакса
   // у useSelector внутри есть и свой провайдер и свой контекст
-  const { categoryId, sort, pageCount, searchValue } = useSelector(selectFilter);
+  const { categoryId, sort, pageCount, searchValue } =
+    useSelector(selectFilter);
   const sortType = sort.sortProperty;
 
   // подписываемся на контекст SearchContext
@@ -130,7 +135,11 @@ export const Home = () => {
     isMounted.current = true;
   }, [categoryId, sortType, pageCount]);
 
-  const pizzas = items.map((obj) => <PizzaBlock {...obj} key={obj.id} />);
+  const pizzas = items.map((obj) => (
+    <Link to={`pizza/${obj.id}`} key={obj.id}>
+      <PizzaBlock {...obj} />
+    </Link>
+  ));
 
   const skeletons = [...new Array(6)].map((_, index) => (
     <Skeleton key={index} />
