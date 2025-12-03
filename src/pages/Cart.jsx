@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import CartItem from "../copmonents/CartItem";
-import { clearItems } from "../redux/cartSlise";
+import { clearItems, selectCart } from "../redux/cartSlise";
 import CartEmpty from "../copmonents/CartEmpty";
 
 export const Cart = () => {
-  const { totalPrice, items } = useSelector((state) => state.cart);
+  const { totalPrice, items } = useSelector(selectCart);
 
   const dispatch = useDispatch();
   const onClickClear = () => {

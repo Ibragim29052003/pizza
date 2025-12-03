@@ -1,18 +1,19 @@
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import styles from "./Search.module.scss";
-import { SearchContext } from "../../App";
 import debounce from "lodash.debounce";
+import { useDispatch } from "react-redux";
+import { setSearchValue } from "../../redux/slice";
 
 export const Search = () => {
+  const dispatch = useDispatch();
   const [value, setValue] = useState();
-  const { setSearchValue } = useContext(SearchContext);
   const inputRef = useRef();
 
   // useCallback создаёт и возвращает мемоизированную функцию (чтобы она не пересоздавалась между рендерами)
   // useEffect выполняет (вызывает) переданную функцию после рендера компонента
 
   function onClickClear() {
-    setSearchValue("");
+    dispatch(setSearchValue(''));
     setValue("");
     inputRef.current.focus();
   }
@@ -22,7 +23,7 @@ export const Search = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateSearchValue = useCallback(
     debounce((str) => {
-      setSearchValue(str);
+      dispatch(setSearchValue(str))
     }, 250),
     []
   );

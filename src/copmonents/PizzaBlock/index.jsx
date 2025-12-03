@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem } from "../../redux/cartSlise";
+import { addItem, selectCartItemById } from "../../redux/cartSlise";
 
 const typeNames = ["тонкое", "традиционное"];
 const sizeArray = [26, 30, 40]
@@ -16,9 +16,7 @@ export default function PizzaBlock({
   // можно без деструктуризации и было бы просто props, в обращении props.title и т.д.
 
   const dispatch = useDispatch();
-  const cartItem = useSelector((state) =>
-    state.cart.items.find((obj) => obj.id === id)
-  );
+  const cartItem = useSelector(selectCartItemById(id));
   const [activeType, setActiveType] = useState(types[0]);
   const [activeSize, setActiveSize] = useState(0);
 

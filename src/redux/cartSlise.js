@@ -49,10 +49,15 @@ const cartSlice = createSlice({
     },
     clearItems(state) {
       state.items = [];
-      state.totalPrice = 0
+      state.totalPrice = 0;
     },
   },
 });
+
+// чтобы не дублировать (state) => state.cart в разных местах, выносим селектор
+export const selectCart = (state) => state.cart;
+export const selectCartItemById = (id) => (state) => state.cart.items.find((obj) => obj.id === id)
+
 
 export const { addItem, removeItem, clearItems, minusItem } = cartSlice.actions;
 

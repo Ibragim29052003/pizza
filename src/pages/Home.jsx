@@ -10,10 +10,10 @@ import {
 
 import { SearchContext } from "../App";
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryId, setPageCount, setFilters } from "../redux/slice";
+import { setCategoryId, setPageCount, setFilters, selectFilter } from "../redux/slice";
 import { useNavigate } from "react-router-dom";
 import { selects } from "../copmonents/Sort";
-import { fetchPizzas } from "../redux/pizzaSlice";
+import { fetchPizzas, selectPizzaData } from "../redux/pizzaSlice";
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ export const Home = () => {
   // возвращает функцию, с помощью которой можно отправлять действия (actions) в Redux для изменения state
   const dispatch = useDispatch();
 
-  const { items, status } = useSelector((state) => state.pizza); // достаем из редакса
+  const { items, status } = useSelector(selectPizzaData); // достаем из редакса
   // у useSelector внутри есть и свой провайдер и свой контекст
-  const { categoryId, sort, pageCount } = useSelector((state) => state.filter);
+  const { categoryId, sort, pageCount, searchValue } = useSelector(selectFilter);
   const sortType = sort.sortProperty;
 
   // подписываемся на контекст SearchContext
@@ -36,7 +36,7 @@ export const Home = () => {
   // то есть все компоненты, находящиеся внутри <SearchContext.Provider>,
   // и использующие этот контекст, обновятся при изменении value.
 
-  const { searchValue } = useContext(SearchContext);
+  // const { searchValue } = useContext(SearchContext);
 
   // чтобы при запросе на бэк учитывать выбранную категорию и сортировку,
   // состояния (categoryId, sortType) хранятся в родительском компоненте (Home).

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setSortType } from "../redux/slice";
+import { selectSort, setSortType } from "../redux/slice";
 
 export const selects = [
   { name: "популярности (DESC)", sortProperty: "rating" },
@@ -16,7 +16,7 @@ export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
 
   // вытаскиваем информацию о сортировке из редакса
   // обработчик события на изменение редакса (типо слушатель)
-  const sort = useSelector((state) => state.filter.sort);
+  const sort = useSelector(selectSort);
   const sortRef = useRef();
   const [open, setOpen] = useState(false);
   // const [activeSelectIndex, setActiveSelectIndex] = useState(0);
