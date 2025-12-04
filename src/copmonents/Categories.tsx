@@ -1,6 +1,11 @@
-// import { useState } from "react";
+import { FC } from "react";
 
-export default function Categories({ value, onClickCategory }) {
+type CategoriesProps = {
+  value: number;
+  onClickCategory: any;
+};
+
+const Categories: FC<CategoriesProps> = ({ value, onClickCategory }) => {
   // const [activeIndex, setActiveIndex] = useState(0);
 
   const categories = [
@@ -40,4 +45,6 @@ export default function Categories({ value, onClickCategory }) {
       </ul>
     </div>
   );
-}
+};
+
+export default Categories;

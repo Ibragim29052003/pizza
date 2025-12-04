@@ -5,11 +5,11 @@ import { useSelector } from "react-redux";
 import { selectCart } from "../redux/cartSlise";
 
 // принимаем данные из App.js и передаем их в search
-export default function Header() {
+export default function Header() { 
   const { items, totalPrice } = useSelector(selectCart);
   const location = useLocation();
 
-  const totalCount = items.reduce((accum, item) => {
+  const totalCount = items.reduce((accum: number, item: any) => {
     return item.count + accum;
   }, 0);
 

@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSort, setSortType } from "../redux/slice";
 
-export const selects = [
+type SortOption = {
+  name: string,
+  sortProperty: string
+}
+
+export const selects: SortOption[] = [
   { name: "популярности (DESC)", sortProperty: "rating" },
   { name: "популярности (ASC)", sortProperty: "-rating" },
   { name: "цене (DESC)", sortProperty: "price" },
@@ -17,20 +22,20 @@ export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
   // вытаскиваем информацию о сортировке из редакса
   // обработчик события на изменение редакса (типо слушатель)
   const sort = useSelector(selectSort);
-  const sortRef = useRef();
+  const sortRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   // const [activeSelectIndex, setActiveSelectIndex] = useState(0);
   // const selects = ["популярности", "цене", "алфавиту"];
 
   // const sortName = selects[activeSelectIndex].name;
 
-  function onClickListItem(obj) {
+  function onClickListItem(obj: SortOption) {
     // onClickSelectItem(obj);
     dispatch(setSortType(obj));
     setOpen(false);
   }
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: any) => {
       const path = event.composedPath()
       if (!path.includes(sortRef.current)) {
         setOpen(false);

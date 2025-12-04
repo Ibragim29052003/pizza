@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import axios from "axios";
-const FullPizza = () => {
-  const [pizza, setPizza] = useState();
+const FullPizza: FC = () => {
+  const [pizza, setPizza] = useState<{
+    imageUrl: string;
+    title: string;
+    price: number;
+  }>();
   const { id } = useParams(); // в App.js у нас динамический параметр прописан как :id и с помощью useParams достаем динамические параметры
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchPizzas() {
@@ -15,15 +19,15 @@ const FullPizza = () => {
         );
         setPizza(data);
       } catch (error) {
-          alert('Ошибка при получении пиццы 🍕')
-        navigate('/')
+        alert("Ошибка при получении пиццы 🍕");
+        navigate("/");
       }
     }
-    fetchPizzas(); 
+    fetchPizzas();
   }, []);
 
   if (!pizza) {
-    return 'Загрузка...'
+    return "Загрузка...";
   }
   return (
     <div className="container">
