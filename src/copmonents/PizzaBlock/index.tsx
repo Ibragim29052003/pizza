@@ -1,27 +1,35 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem, selectCartItemById } from "../../redux/cartSlise";
 
 const typeNames = ["тонкое", "традиционное"];
-const sizeArray = [26, 30, 40]
+const sizeArray = [26, 30, 40];
 
-export default function PizzaBlock({
+type PizzaBlockProps = {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  sizes: number[];
+  types: number[];
+};
+
+const PizzaBlock: FC<PizzaBlockProps> = ({
   id,
   title,
   price,
   imageUrl,
   sizes,
   types,
-}) {
+}) => {
   // можно без деструктуризации и было бы просто props, в обращении props.title и т.д.
 
   const dispatch = useDispatch();
   const cartItem = useSelector(selectCartItemById(id));
-  const [activeType, setActiveType] = useState(types[0]);
-  const [activeSize, setActiveSize] = useState(0);
+  const [activeType, setActiveType] = useState<number>(types[0]);
+  const [activeSize, setActiveSize] = useState<number>(0);
 
-
-const addedCount = !cartItem ? 0 : cartItem.count
+  const addedCount = !cartItem ? 0 : cartItem.count;
 
   const onClickAdd = () => {
     // объект, который будет храниться в корзине (в редаксе)
@@ -83,9 +91,10 @@ const addedCount = !cartItem ? 0 : cartItem.count
           </svg>
           <span>Добавить</span>
           {addedCount > 0 && <i>{addedCount}</i>}
-         
         </button>
       </div>
     </div>
   );
-}
+};
+
+export default PizzaBlock;

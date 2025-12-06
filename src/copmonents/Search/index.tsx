@@ -1,34 +1,37 @@
-import { useCallback, useRef, useState } from "react";
+import { FC, useCallback, useRef, useState } from "react";
 import styles from "./Search.module.scss";
 import debounce from "lodash.debounce";
 import { useDispatch } from "react-redux";
 import { setSearchValue } from "../../redux/slice";
 
-export const Search = () => {
+export const Search: FC = () => {
   const dispatch = useDispatch();
-  const [value, setValue] = useState();
-  const inputRef = useRef();
+  const [value, setValue] = useState<string>("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // useCallback создаёт и возвращает мемоизированную функцию (чтобы она не пересоздавалась между рендерами)
   // useEffect выполняет (вызывает) переданную функцию после рендера компонента
 
   function onClickClear() {
-    dispatch(setSearchValue(''));
+    dispatch(setSearchValue(""));
     setValue("");
-    inputRef.current.focus();
+    // if (inputRef.current) {
+    //   inputRef.current.focus();
+    // }
+    inputRef.current?.focus();
   }
 
   // будем вызывать эту функцию каждый раз при изменении инпута,
   // чтобы не было миллион запросов на сервер, а было кд
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const updateSearchValue = useCallback(
-    debounce((str) => {
-      dispatch(setSearchValue(str))
+    debounce((str: string) => {
+      dispatch(setSearchValue(str));
     }, 250),
     []
   );
 
-  const onChangeInput = (event) => {
+  const onChangeInput = (event:any) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   };

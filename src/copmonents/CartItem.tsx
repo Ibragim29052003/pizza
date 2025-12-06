@@ -3,7 +3,7 @@ import { minusItem, addItem, removeItem } from "../redux/cartSlise";
 import { FC } from "react";
 
 type CartItemProps = {
-  id: number;
+  id: string;
   count: number;
   imageUrl: string;
   title: string;

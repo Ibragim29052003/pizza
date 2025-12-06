@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import qs from "qs";
 import {
   Categories,
@@ -19,7 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { selects } from "../copmonents/Sort";
 import { fetchPizzas, selectPizzaData } from "../redux/pizzaSlice";
 
-export const Home = () => {
+export const Home: FC = () => {
   const navigate = useNavigate();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
@@ -54,11 +54,11 @@ export const Home = () => {
   //   sortProperty: "rating",
   // });
 
-  const onClickCategory = (id) => {
+  const onClickCategory = (id: number) => {
     dispatch(setCategoryId(id)); // аналогия с мегафоном (мы кричим, что хотим изменить категорию)
   };
 
-  const onChangePageNumber = (number) => {
+  const onChangePageNumber = (number: number) => {
     dispatch(setPageCount(number));
   };
 
@@ -72,6 +72,8 @@ export const Home = () => {
 
     // try {
     dispatch(
+      // чуть позже подправлю
+      // @ts-ignore
       fetchPizzas({
         order,
         sortBy,
@@ -135,7 +137,7 @@ export const Home = () => {
     isMounted.current = true;
   }, [categoryId, sortType, pageCount]);
 
-  const pizzas = items.map((obj) => (
+  const pizzas = items.map((obj: any) => (
     <Link to={`pizza/${obj.id}`} key={obj.id}>
       <PizzaBlock {...obj} />
     </Link>

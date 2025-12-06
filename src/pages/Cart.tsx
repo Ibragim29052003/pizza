@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import CartItem from "../copmonents/CartItem";
 import { clearItems, selectCart } from "../redux/cartSlise";
 import CartEmpty from "../copmonents/CartEmpty";
+import { FC } from "react";
 
-export const Cart = () => {
+export const Cart: FC = () => {
   const { totalPrice, items } = useSelector(selectCart);
 
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ export const Cart = () => {
     }
   };
 
-  const totalCount = items.reduce((accum, item) => {
+  const totalCount = items.reduce((accum: number, item: any) => {
     const countItem = item.count;
     return accum + countItem;
   }, 0);
@@ -101,7 +102,7 @@ if (!totalPrice) {
           </div>
         </div>
         <div className="content__items">
-          {items.map((item) => (
+          {items.map((item: any) => (
             <CartItem key={item.id} {...item} />
           ))}
         </div>
