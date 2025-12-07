@@ -35,9 +35,12 @@ export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
     setOpen(false);
   }
   useEffect(() => {
-    const handleClickOutside = (event: any) => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // const _event = event as MouseEvent & { // прибавляем к типу MouseEvent объект с полем path
+      //  
+      // }; path: Node[];
       const path = event.composedPath()
-      if (!path.includes(sortRef.current)) {
+      if (sortRef.current && !path.includes(sortRef.current)) {
         setOpen(false);
       }
     }

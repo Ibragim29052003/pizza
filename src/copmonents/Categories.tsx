@@ -1,25 +1,34 @@
+import { get } from "http";
 import { FC } from "react";
 
 type CategoriesProps = {
   value: number;
-  onClickCategory: any;
+  onClickCategory: (i: number) => void;
+  getCategories?: (categories: string[]) => void;
 };
 
-const Categories: FC<CategoriesProps> = ({ value, onClickCategory }) => {
-  // const [activeIndex, setActiveIndex] = useState(0);
+const categories = [
+  "Все",
+  "Мясные",
+  "Вегетарианская",
+  "Гриль",
+  "Острые",
+  "Закрытые",
+];
 
-  const categories = [
-    "Все",
-    "Мясные",
-    "Вегетарианская",
-    "Гриль",
-    "Острые",
-    "Закрытые",
-  ];
+const Categories: FC<CategoriesProps> = ({
+  value,
+  getCategories,
+  onClickCategory,
+}) => {
+  // const [activeIndex, setActiveIndex] = useState(0);
 
   // function onClickCategory(index) {
   //   setActiveIndex(index);
   // }
+
+  // getCategories && getCategories(categories);
+  getCategories?.(categories);
 
   return (
     <div className="categories">

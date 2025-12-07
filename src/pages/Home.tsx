@@ -156,6 +156,7 @@ export const Home: FC = () => {
         */}
         <Categories
           value={categoryId}
+          // getCategories={() => {}} // сделали опциональным
           onClickCategory={onClickCategory} // функция, которую я передаю дочернему компоненту.
           // её задача: когда ребёнок «сообщит» о клике, обновить состояние родителя.
         />
