@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { minusItem, addItem, removeItem } from "../redux/cartSlise";
+import { minusItem, addItem, removeItem, PizzaItem } from "../redux/cartSlise";
 import { FC } from "react";
 
 type CartItemProps = {
@@ -16,7 +16,8 @@ const CartItem: FC<CartItemProps> = ({ id, count, imageUrl, title, price, type, 
   const dispatch = useDispatch();
 
   const onClickPlus = () => {
-    dispatch(addItem({ id }));
+    dispatch(addItem({ id } as PizzaItem));
+    // dispatch(addItem({ id, title, price, imageUrl, type, size, count })); // передаем весь объект пиццы
   };
 
   const onClickMinus = () => {

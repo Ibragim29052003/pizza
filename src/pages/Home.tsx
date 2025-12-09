@@ -8,16 +8,17 @@ import {
   Pagination,
 } from "../copmonents";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   setCategoryId,
   setPageCount,
   setFilters,
   selectFilter,
-} from "../redux/slice";
-import { Link, useNavigate } from "react-router-dom";
+} from "../redux/filterSlice";
+import { useNavigate } from "react-router-dom";
 import { selects } from "../copmonents/Sort";
 import { fetchPizzas, selectPizzaData } from "../redux/pizzaSlice";
+import { useAppDispatch } from "../redux/store";
 
 export const Home: FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export const Home: FC = () => {
   const isMounted = useRef(false);
 
   // возвращает функцию, с помощью которой можно отправлять действия (actions) в Redux для изменения state
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { items, status } = useSelector(selectPizzaData); // достаем из редакса
   // у useSelector внутри есть и свой провайдер и свой контекст
@@ -72,14 +73,12 @@ export const Home: FC = () => {
 
     // try {
     dispatch(
-      // чуть позже подправлю
-      // @ts-ignore
       fetchPizzas({
         order,
         sortBy,
         category,
         search,
-        pageCount,
+        pageCount: String(pageCount),
       })
     );
     // }
@@ -98,12 +97,14 @@ export const Home: FC = () => {
 
       const sort = selects.find(
         (obj) => obj.sortProperty === params.sortProperty
-      );
+      ) || selects[0];
 
       dispatch(
         setFilters({
-          ...params,
-          sort,
+          searchValue: '',
+          categoryId: Number(params.categoryId) || 0,
+          pageCount: Number(params.pageCount) || 1,
+          sort, 
         })
       );
       isSearch.current = true; // отмечаем, что уже восстанавливаем состояние
@@ -138,9 +139,7 @@ export const Home: FC = () => {
   }, [categoryId, sortType, pageCount]);
 
   const pizzas = items.map((obj: any) => (
-    <Link to={`pizza/${obj.id}`} key={obj.id}>
       <PizzaBlock {...obj} />
-    </Link>
   ));
 
   const skeletons = [...new Array(6)].map((_, index) => (

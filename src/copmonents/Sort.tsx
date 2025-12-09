@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSort, setSortType } from "../redux/slice";
+import { selectSort, setSortType, SortPropertyEnum } from "../redux/filterSlice";
 
 type SortOption = {
-  name: string,
-  sortProperty: string
-}
+  name: string;
+  sortProperty: SortPropertyEnum;
+};
 
 export const selects: SortOption[] = [
-  { name: "популярности (DESC)", sortProperty: "rating" },
-  { name: "популярности (ASC)", sortProperty: "-rating" },
-  { name: "цене (DESC)", sortProperty: "price" },
-  { name: "цене (ASC)", sortProperty: "-price" },
-  { name: "алфавиту (DESC)", sortProperty: "title" },
-  { name: "алфавиту (ASC)", sortProperty: "-title" },
+  { name: "популярности (DESC)", sortProperty: SortPropertyEnum.RATING_DESC },
+  { name: "популярности (ASC)", sortProperty: SortPropertyEnum.RATING_ASC },
+  { name: "цене (DESC)", sortProperty: SortPropertyEnum.PRICE_DESC },
+  { name: "цене (ASC)", sortProperty: SortPropertyEnum.PRICE_ASC },
+  { name: "алфавиту (DESC)", sortProperty: SortPropertyEnum.TITLE_DESC },
+  { name: "алфавиту (ASC)", sortProperty: SortPropertyEnum.TITLE_ASC },
 ];
 
 export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
@@ -37,20 +37,20 @@ export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // const _event = event as MouseEvent & { // прибавляем к типу MouseEvent объект с полем path
-      //  
+      //
       // }; path: Node[];
-      const path = event.composedPath()
+      const path = event.composedPath();
       if (sortRef.current && !path.includes(sortRef.current)) {
         setOpen(false);
       }
-    }
+    };
     document.body.addEventListener("click", handleClickOutside);
 
-    // если компонент будет умирать, то есть если будет размонтироваться 
+    // если компонент будет умирать, то есть если будет размонтироваться
     return () => {
-      document.body.removeEventListener('click', handleClickOutside)
-    }
-  }, []); 
+      document.body.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div ref={sortRef} className="sort">
@@ -90,3 +90,4 @@ export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
     </div>
   );
 }
+

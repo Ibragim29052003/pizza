@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useCallback, useRef, useState } from "react";
 import styles from "./Search.module.scss";
 import debounce from "lodash.debounce";
 import { useDispatch } from "react-redux";
-import { setSearchValue } from "../../redux/slice";
+import { setSearchValue } from "../../redux/filterSlice";
 
 export const Search: FC = () => {
   const dispatch = useDispatch();

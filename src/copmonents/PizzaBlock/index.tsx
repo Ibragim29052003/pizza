@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, selectCartItemById } from "../../redux/cartSlise";
+import { addItem, PizzaItem, selectCartItemById } from "../../redux/cartSlise";
+import { Link } from "react-router-dom";
 
 const typeNames = ["тонкое", "традиционное"];
 const sizeArray = [26, 30, 40];
@@ -33,20 +34,23 @@ const PizzaBlock: FC<PizzaBlockProps> = ({
 
   const onClickAdd = () => {
     // объект, который будет храниться в корзине (в редаксе)
-    const item = {
+    const item: PizzaItem = {
       id,
       title,
       price,
       imageUrl,
       type: typeNames[activeType],
       size: sizeArray[activeSize],
+      count: 0,
     };
     dispatch(addItem(item));
   };
   return (
     <div className="pizza-block">
-      <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
-      <h4 className="pizza-block__title">{title}</h4>
+      <Link to={`pizza/${id}`} key={id}>
+        <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+        <h4 className="pizza-block__title">{title}</h4>
+      </Link>
       <div className="pizza-block__selector">
         <ul>
           {types.map((type) => (
