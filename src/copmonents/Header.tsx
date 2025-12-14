@@ -2,16 +2,27 @@ import { Link, useLocation } from "react-router-dom";
 import logoSvg from "../assets/img/pizza-logo.svg";
 import { Search } from "./Search";
 import { useSelector } from "react-redux";
-import { selectCart } from "../redux/cartSlise";
+import { selectCart } from "../redux/cart/selectors";
+import { useEffect, useRef } from "react";
 
 // принимаем данные из App.js и передаем их в search
-export default function Header() { 
+export default function Header() {
   const { items, totalPrice } = useSelector(selectCart);
   const location = useLocation();
+  const isMounted = useRef(false); // отслеживаем первый рендер компонента
 
   const totalCount = items.reduce((accum: number, item: any) => {
     return item.count + accum;
   }, 0);
+
+  // если меняется корзина, то делаем перерисовку
+  useEffect(() => {
+    if (isMounted.current) { // чтобы при первом рендере не срабатывал этот эффект
+      const json = JSON.stringify(items); // преобразуем в строку
+      localStorage.setItem("cart", json); // сохраняем в локальное хранилище
+    }
+    isMounted.current = true;
+  }, [items]);
 
   return (
     <div className="header">
@@ -26,9 +37,9 @@ export default function Header() {
             </div>
           </div>
         </Link>
-        <Search />
+        {location.pathname !== "/cart" && <Search />}
         <div className="header__cart">
-        {location.pathname !== "/cart" && (
+          {location.pathname !== "/cart" && (
             <Link to="/cart" className="button button--cart">
               <span translate="no">{totalPrice} ₽</span>
               <div className="button__delimiter"></div>
@@ -63,7 +74,7 @@ export default function Header() {
               </svg>
               <span>{totalCount}</span>
             </Link>
-        )}
+          )}
         </div>
       </div>
     </div>

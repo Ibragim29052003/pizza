@@ -9,15 +9,17 @@ import {
 } from "../copmonents";
 
 import { useSelector } from "react-redux";
-import {
-  setCategoryId,
-  setPageCount,
-  setFilters,
-  selectFilter,
-} from "../redux/filterSlice";
+
 import { useNavigate } from "react-router-dom";
 import { selects } from "../copmonents/Sort";
-import { fetchPizzas, selectPizzaData } from "../redux/pizzaSlice";
+import { selectFilter } from "../redux/filter/selectors";
+import {
+  setCategoryId,
+  setFilters,
+  setPageCount,
+} from "../redux/filter/slice";
+import { fetchPizzas } from "../redux/pizza/asyncActions";
+import { selectPizzaData } from "../redux/pizza/selectors";
 import { useAppDispatch } from "../redux/store";
 
 export const Home: FC = () => {
