@@ -12,7 +12,15 @@ type CartItemProps = {
   size: number;
 };
 
-const CartItem: FC<CartItemProps> = ({ id, count, imageUrl, title, price, type, size }) => {
+const CartItem: FC<CartItemProps> = ({
+  id,
+  count,
+  imageUrl,
+  title,
+  price,
+  type,
+  size,
+}) => {
   const dispatch = useDispatch();
 
   const onClickPlus = () => {
@@ -42,7 +50,8 @@ const CartItem: FC<CartItemProps> = ({ id, count, imageUrl, title, price, type, 
         </p>
       </div>
       <div className="cart__item-count">
-        <div
+        <button
+          disabled={count === 1}
           className="button button--outline button--circle cart__item-count-minus"
           onClick={onClickMinus}
         >
@@ -62,9 +71,9 @@ const CartItem: FC<CartItemProps> = ({ id, count, imageUrl, title, price, type, 
               fill="#EB5A1E"
             />
           </svg>
-        </div>
+        </button>
         <b>{count}</b>
-        <div
+        <button
           className="button button--outline button--circle cart__item-count-plus"
           onClick={onClickPlus}
         >
@@ -84,7 +93,7 @@ const CartItem: FC<CartItemProps> = ({ id, count, imageUrl, title, price, type, 
               fill="#EB5A1E"
             />
           </svg>
-        </div>
+        </button>
       </div>
       <div className="cart__item-price">
         <b>{price * count} ₽</b>

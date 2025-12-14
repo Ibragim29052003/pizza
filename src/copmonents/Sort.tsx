@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FC, memo, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSort, setSortType, SortPropertyEnum } from "../redux/filterSlice";
 
@@ -14,9 +14,10 @@ export const selects: SortOption[] = [
   { name: "цене (ASC)", sortProperty: SortPropertyEnum.PRICE_ASC },
   { name: "алфавиту (DESC)", sortProperty: SortPropertyEnum.TITLE_DESC },
   { name: "алфавиту (ASC)", sortProperty: SortPropertyEnum.TITLE_ASC },
-];
-
-export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
+]; 
+// memo нужен, чтобы компонент не перерисовывался, если не изменились пропсы и стейт
+const Sort: FC = memo (
+  (/*{ activeSelectIndex, onClickSelectItem }*/) => {
   const dispatch = useDispatch();
 
   // вытаскиваем информацию о сортировке из редакса
@@ -90,4 +91,7 @@ export default function Sort(/*{ activeSelectIndex, onClickSelectItem }*/) {
     </div>
   );
 }
+)
 
+
+export default Sort;

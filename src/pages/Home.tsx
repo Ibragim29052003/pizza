@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import qs from "qs";
 import {
   Categories,
@@ -55,14 +55,14 @@ export const Home: FC = () => {
   //   sortProperty: "rating",
   // });
 
-  const onClickCategory = (id: number) => {
+  // useCallback нужен, чтобы функция не пересоздавалась при каждом рендере
+  const onClickCategory = useCallback((id: number) => {
     dispatch(setCategoryId(id)); // аналогия с мегафоном (мы кричим, что хотим изменить категорию)
-  };
+  }, [])
 
   const onChangePageNumber = (number: number) => {
     dispatch(setPageCount(number));
   };
-
   const getPizzas = async () => {
     // setIsLoading(true); // чтобы начиналась загрузка (показывался скелетон)
 
@@ -139,7 +139,7 @@ export const Home: FC = () => {
   }, [categoryId, sortType, pageCount]);
 
   const pizzas = items.map((obj: any) => (
-      <PizzaBlock {...obj} />
+      <PizzaBlock key={obj.id} {...obj} />
   ));
 
   const skeletons = [...new Array(6)].map((_, index) => (

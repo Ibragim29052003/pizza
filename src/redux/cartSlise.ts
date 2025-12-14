@@ -51,8 +51,6 @@ const cartSlice = createSlice({
       const decrement = state.items.find((obj) => obj.id === action.payload);
       if (decrement && decrement.count >= 2) {
         decrement.count--;
-      } else {
-        state.items = state.items.filter((obj) => obj.id !== action.payload);
       }
 
       state.totalPrice = state.items.reduce((sum, obj) => {

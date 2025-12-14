@@ -1,5 +1,4 @@
-import { get } from "http";
-import { FC } from "react";
+import { FC, memo } from "react";
 
 type CategoriesProps = {
   value: number;
@@ -16,7 +15,9 @@ const categories = [
   "Закрытые",
 ];
 
-const Categories: FC<CategoriesProps> = ({
+// если не изменились пропсы и не поменялся стейт, то компонент не будет перерисовываться благодаря memo
+const Categories: FC<CategoriesProps> = memo(
+  ({
   value,
   getCategories,
   onClickCategory,
@@ -29,6 +30,7 @@ const Categories: FC<CategoriesProps> = ({
 
   // getCategories && getCategories(categories);
   getCategories?.(categories);
+
 
   return (
     <div className="categories">
@@ -54,6 +56,7 @@ const Categories: FC<CategoriesProps> = ({
       </ul>
     </div>
   );
-};
+}
+)
 
 export default Categories;

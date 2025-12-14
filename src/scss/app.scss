@@ -198,6 +198,26 @@ body {
             display: none;
           }
         }
+
+        &:disabled {
+          opacity: 0.4;
+          border-color: #787878;
+          cursor: not-allowed;
+
+          &:active {
+            transform: none;
+          }
+
+          &:hover {
+            background-color: transparent;
+
+            svg {
+              path {
+                stroke: #787878;
+              }
+          }
+        }
+      }
       }
 
       b {
@@ -235,6 +255,7 @@ body {
           fill: darken($color: $gray-line, $amount: 15);
         }
       }
+    
 
       .button {
         svg {
